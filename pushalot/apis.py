@@ -1,3 +1,4 @@
+import warnings
 from abc import (
     ABCMeta,
     abstractmethod,
@@ -21,14 +22,14 @@ class BaseAPI(with_metaclass(ABCMeta)):
         """
 
     @abstractmethod
-    def get_methods(self):
+    def get_api_methods(self):
         """
         :return: Should return dict with available pushalot API methods
         :rtype: dict
         """
 
     @abstractmethod
-    def get_required_methods(self):
+    def get_api_required_methods(self):
         """
         List with required params
         :return:
@@ -36,12 +37,15 @@ class BaseAPI(with_metaclass(ABCMeta)):
         """
 
     def _build_params_from_kwargs(self, **kwargs):
-        api_methods = self.get_methods()
-        required_methods = self.get_required_methods()
+        api_methods = self.get_api_methods()
+        required_methods = self.get_api_required_methods()
         ret_kwargs = {}
         for key, val in kwargs.items():
             if key not in api_methods:
-                # TODO: log
+                warnings.warn(
+                    'Passed uknown parameter [{}]'.format(key),
+                    Warning
+                )
                 continue
             if key not in required_methods and val is None:
                 continue
@@ -118,10 +122,22 @@ class APILatest(BaseAPI):
     def send_important_message(self, title, body):
         return self.send(title=title, body=body, is_important=True)
 
-    def send_expired_message(self, title, body, ttl):
+    def send_with_expiry(self, title, body, ttl):
         return self.send(title=title, body=body, ttl=ttl)
 
-    def get_methods(self):
+    def send_with_link(self, title, body, link, link_title=None):
+        link_title = link_title or link
+        return self.send(
+            title=title,
+            body=body,
+            link=link,
+            link_title=link_title
+        )
+
+    def send_with_icon(self, title, body, image):
+        return self.send(title=title, body=body, image=image)
+
+    def get_api_methods(self):
         return {
             'token': {
                 'param': 'AuthorizationToken',
@@ -173,5 +189,5 @@ class APILatest(BaseAPI):
             }
         }
 
-    def get_required_methods(self):
+    def get_api_required_methods(self):
         return ['AuthorizationToken', 'Title', 'Body']
