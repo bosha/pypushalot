@@ -6,13 +6,13 @@ from abc import (
 from six import with_metaclass
 try:
     from urllib.request import urlopen
-    from urllib.parse import (
+    from urllib.parse import ( # pragma: no cover
         urlparse,
         urlencode,
     )
 except ImportError:
     from urlparse import urlparse
-    from urllib import (
+    from urllib import ( # pragma: no cover
         urlopen,
         urlencode,
     )
@@ -23,7 +23,7 @@ API_URL = 'https://pushalot.com/api/sendmessage'
 
 class PushalotTransportInterface(with_metaclass(ABCMeta)):
 
-    @abstractmethod
+    @abstractmethod # pragma: no cover
     def send(self, **kwargs):
         """Send request to API
 
@@ -82,3 +82,7 @@ class HTTPTransport(PushalotTransportInterface):
             raise exc.PushalotInternalErrorException()
         elif code == 503:
             raise exc.PushalotUnavailableException()
+        else:
+            raise exc.PushalotException(
+                'Unknown HTTP code returned'
+            )
