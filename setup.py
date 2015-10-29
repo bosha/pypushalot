@@ -5,14 +5,14 @@ from setuptools import (
 
 setup(
     name='pushalot',
-    test_suite='tests',
+    install_requires=['six'],
     packages=find_packages(),
     version='0.1',
-    description='',
+    description='Wrapper for pushalot.com service',
     author='Alex Bo',
-    author_email='bosha@the-bosha.ru',
+    author_email='public@the-bosha.ru',
     url='https://github.com/bosha/pypushalot',
-    keywords=['pushalot', 'push', 'api'],
+    keywords=['pushalot', 'push', 'api', 'windowsphone', 'wp'],
     license='MIT',
     classifiers=[
         'License :: OSI Approved :: MIT License',
@@ -20,4 +20,6 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     zip_safe=False,
+    test_suite='tests',
+    tests_require=['coverage', 'httpretty']
 )
