@@ -52,3 +52,7 @@ coverage:
 pip install coverage
 coverage run -m unittest discover
 ```
+
+# License
+
+Released under MIT License. See the bundled LICENSE file for details.
