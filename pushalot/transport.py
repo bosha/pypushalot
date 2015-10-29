@@ -3,21 +3,26 @@ from abc import (
     ABCMeta,
     abstractmethod,
 )
-from six import with_metaclass
+from six import (
+    with_metaclass,
+    reraise,
+)
 try:
     from urllib.request import urlopen
     from urllib.parse import ( # pragma: no cover
         urlparse,
         urlencode,
     )
-except ImportError:
-    from urlparse import urlparse
-    from urllib import ( # pragma: no cover
+    from urllib.error import URLError # pragma: no cover
+except ImportError: # pragma: no cover
+    from urlparse import urlparse # pragma: no cover
+    from urllib2 import ( # pragma: no cover
         urlopen,
-        urlencode,
+        URLError,
     )
+    from urllib import urlencode # pragma: no cover
 
-import exc
+import pushalot.exc
 
 API_URL = 'https://pushalot.com/api/sendmessage'
 
@@ -46,43 +51,56 @@ class PushalotTransportInterface(with_metaclass(ABCMeta)):
 
 class HTTPTransport(PushalotTransportInterface):
 
-    def send(self, **kwargs):
+    def _send_http_request(self, **kwargs):
         try:
             params = urlencode(kwargs)
-            response = urlopen(url=API_URL, data=params)
-            text = "\n".join(response.readlines())
-            decoded = json.loads(text)
-            code = response.code
-            response.close()
+            response = urlopen(url=API_URL, data=params.encode('utf-8'))
+        except URLError as e:
+            response = e
+
+        body = "\n".join([x.decode('utf-8') for x in response.readlines()])
+        code = response.code
+        response.close()
+        return code, body
+
+    def send(self, **kwargs):
+        code = None
+        try:
+            code, body = self._send_http_request(**kwargs)
+            decoded = json.loads(body)
         except Exception as e:
             import sys
-            raise exc.PushalotException(
-                'Uncaught API exception: {}'.format(str(e))
-            ), None, sys.exc_info()[2]
+            reraise(
+                pushalot.exc.PushalotException,
+                pushalot.exc.PushalotException(
+                    'Uncaught API exception: {}'.format(str(e))
+                ),
+                sys.exc_info()[2]
+            )
 
         if code == 200:
             if decoded['Success'] == False:
-                raise exc.PushalotException(
+                raise pushalot.exc.PushalotException(
                     "Uncaught error occupied: {}".format(decoded['Description'])
                 )
             return True
         elif code == 400:
-            raise exc.PushalotBadRequestException(
+            raise pushalot.exc.PushalotBadRequestException(
                 decoded['Description']
             )
         elif code == 406:
-            raise exc.PushalotNotAcceptableException(
+            raise pushalot.exc.PushalotNotAcceptableException(
                 decoded['Description']
             )
         elif code == 410:
-            raise exc.PushalotGoneException(
+            raise pushalot.exc.PushalotGoneException(
                 decoded['Description']
             )
         elif code == 500:
-            raise exc.PushalotInternalErrorException()
+            raise pushalot.exc.PushalotInternalErrorException()
         elif code == 503:
-            raise exc.PushalotUnavailableException()
+            raise pushalot.exc.PushalotUnavailableException()
         else:
-            raise exc.PushalotException(
+            raise pushalot.exc.PushalotException(
                 'Unknown HTTP code returned'
             )

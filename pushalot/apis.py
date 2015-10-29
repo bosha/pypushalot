@@ -6,7 +6,7 @@ from abc import (
 )
 from six import with_metaclass
 
-import exc
+import pushalot.exc
 
 class BaseAPI(with_metaclass(ABCMeta)):
 
@@ -138,7 +138,7 @@ class BaseAPI(with_metaclass(ABCMeta)):
 
         for item in required_methods:
             if item not in ret_kwargs:
-                raise exc.PushalotException(
+                raise pushalot.exc.PushalotException(
                     "Parameter [{}] required, but not set".format(item)
                 )
 
@@ -329,7 +329,6 @@ class APILatest(BaseAPI):
             'ttl': {
                 'param': 'TimeToLive',
                 'type': int,
-                # 'max_len': 43200,
             }
         }
 

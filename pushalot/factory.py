@@ -1,8 +1,8 @@
-from apis import (
+from pushalot.apis import (
     BaseAPI,
     APILatest,
 )
-from transport import (
+from pushalot.transport import (
     PushalotTransportInterface,
     HTTPTransport,
 )

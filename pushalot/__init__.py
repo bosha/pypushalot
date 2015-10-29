@@ -1,3 +1,3 @@
-from factory import PushalotFactory
+from .factory import PushalotFactory
 
 Pushalot = PushalotFactory.create

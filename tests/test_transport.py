@@ -23,6 +23,7 @@ class TestHTTPTransport(unittest.TestCase):
                 Title='Test',
             )
 
+    @unittest.skipIf(sys.version_info[0] > 2, 'Not required in python3')
     @httpretty.activate
     def test_uncaught_exception_keeps_stacktrace(self):
         try:
