@@ -22,7 +22,7 @@ Or using factory:
 
 ```python
 from pushalot import PushalotFactory
-api = PushalotFactory.create(token=your-token-here')
+api = PushalotFactory.create(token='your-token-here')
 ```
 
 You can provide custom 'transport' or API version.
