@@ -1,5 +1,7 @@
 # Pushalot
 
+**Pushalot doesn't exist nowdays. The repository is archived. Consider using alternatives.**
+
 Wrapper around [pushalot.com](https://pushalot.com) API. 
 
 > Pushalot is a platform for receiving custom push notifications to connected devices running Windows Phone or Windows 8. Custom means that those push notifications can be sent from virtually any source, as long as that source can interact with our open REST API. 
